@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MapEva</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_exit">退出</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="ph_first_location_time">首次定位耗时(ms): %1$d</string>
+    <string name="ph_location_time">定位开始时间: %1$s</string>
+    <string name="ph_location_count">定位/失败(次): %1$d / %2$d</string>
+    <string name="ph_location_traffic">流量(KB): %1$s</string>
+    <string name="show_in_map">图示</string>
+    <string name="ph_wifi_state">WiFi: %1$s</string>
+    <string name="ph_gps_state">GPS: %1$s</string>
+    <string name="ph_cid">CID: %1$s</string>
+    <string name="ph_location_addr">地址: %1$s</string>
+    <string name="key_location_settings_url_index">key_location_settings_url_index</string>
+    <string name="title_location_settings_url_index">选择定位服务器</string>
+
+</resources>

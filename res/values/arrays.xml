@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer-array name="test_duration_value">
+        <item>600</item>
+        <item>1800</item>
+        <item>2700</item>
+        <item>3600</item>
+        <item>5400</item>
+        <item>7200</item>
+        <item>0</item>
+	</integer-array>
+    <string-array name="test_duration">
+        <item>10分钟</item>
+        <item>30分钟</item>
+        <item>45分钟</item>
+        <item>1小时</item>
+        <item>1.5小时</item>
+        <item>2小时</item>
+        <item>无时间限制</item>
+    </string-array>
+	<string-array name="url_index">
+        <item>0</item>
+        <item>1</item>
+	</string-array>
+    <string-array name="url_title">
+        <item>lstest.map.soso.com</item>
+        <item>lbs.map.qq.com</item>
+    </string-array>
+
+    <string-array name="log_category">
+        <item>今天</item>
+        <item>昨天</item>
+        <item>未上传</item>
+        <item>所有</item>
+    </string-array>
+
+    <string-array name="sdks">
+        <item>腾讯</item>
+        <item>百度</item>
+        <item>高德</item>
+        <item>搜狗</item>
+    </string-array>
+    <string-array name="spinner_test_data1">
+        <item>腾讯</item>
+        <item>高德</item>
+        <item>百度</item>
+    </string-array>
+
+    <string-array name="list_view_test_data1">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="list_view_test_data2">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+    </string-array>
+
+</resources>

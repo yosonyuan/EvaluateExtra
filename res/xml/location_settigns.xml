@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        android:entries="@array/url_title"
+        android:entryValues="@array/url_index"
+        android:key="@string/key_location_settings_url_index"
+        android:title="@string/title_location_settings_url_index"
+        android:defaultValue="0"
+        android:summary="lstest.map.soso.com" />
+
+</PreferenceScreen>

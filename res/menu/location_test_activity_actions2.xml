@@ -1,0 +1,51 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.soso.evaextra="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_runorstop"
+        android:icon="@drawable/ic_action_run"
+        android:title="开始"
+        com.soso.evaextra:showAsAction="always"/>
+    <item
+        android:id="@+id/action_choosesdk"
+        android:icon="@drawable/ic_action_choose_sdk"
+        android:title="选择SDK"
+        com.soso.evaextra:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_viewlog"
+        android:icon="@drawable/ic_action_viewlog"
+        android:title="查看Log"
+        com.soso.evaextra:showAsAction="never"
+       />
+    <item
+        android:id="@+id/action_version"
+        android:icon="@drawable/ic_action_settings"
+        android:title="version_1.0.7"
+        com.soso.evaextra:showAsAction="never"/>
+    <!--<item
+        android:id="@+id/action_screenshot"
+        android:icon="@drawable/ic_action_choose_sdk"
+        android:title="截屏"
+        com.soso.evaextra:showAsAction="always"/>-->
+    <!--
+    <item
+        android:id="@+id/a_More"
+        android:icon="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
+        android:title="More"
+        com.soso.evaextra:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_viewhistory"
+                android:icon="@drawable/tab_list_normal"
+                android:title="历史记录"
+                com.soso.evaextra:showAsAction="always"/>
+            <item
+                android:id="@+id/action_settings"
+                android:icon="@drawable/tab_list_normal"
+                android:title="参数设置"
+                com.soso.evaextra:showAsAction="always"/>
+        </menu>
+    </item>-->
+
+</menu>

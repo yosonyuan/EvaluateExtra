@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tv_indicator">#AEAEAE</color>
+    <color name="divider">#DEDEDE</color>
+    <color name="indicator_bg">#EFEFEF</color>
+    <color name="tv_itemt">#333333</color>
+    
+    <drawable name="tv_tab_normal">#666666</drawable>
+    <drawable name="tv_tab_press">#FFFFFF</drawable>
+</resources>

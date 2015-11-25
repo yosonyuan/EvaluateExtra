@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+     <fragment 
+        android:id="@+id/mapview_fg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        class="com.tencent.tencentmap.mapsdk.maps.SupportMapFragment"
+     />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/presence_away"
+            android:gravity="center_vertical"
+            android:text="腾讯"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/presence_busy"
+            android:gravity="center_vertical"
+            android:text="高德"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/presence_online"
+            android:gravity="center_vertical"
+            android:text="百度"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@android:drawable/presence_invisible"
+            android:gravity="center_vertical"
+            android:text="搜狗"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+    <ImageView 
+        android:id="@+id/point_center"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_aim_128"/>
+    
+    <ImageButton
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="48dp"
+        android:src="@drawable/ic_action_mylocation_128" />
+    
+    <ImageButton
+        android:id="@+id/move_up"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="53dp"
+        android:layout_marginBottom="200dp"
+        android:src="@drawable/ic_move_up" />
+    
+    <ImageButton
+        android:id="@+id/move_right"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="148dp"
+        android:src="@drawable/ic_move_right" />
+            
+    <ImageButton
+        android:id="@+id/move_down"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="53dp"
+        android:layout_marginBottom="95dp"
+        android:src="@drawable/ic_move_down" />
+    
+    <ImageButton
+        android:id="@+id/move_left"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="106dp"
+        android:layout_marginBottom="148dp"
+        android:src="@drawable/ic_move_left" />
+
+</RelativeLayout>

@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.soso.evaextra="http://schemas.android.com/apk/res-auto" >
+ 	<item
+        android:id="@+id/action_runorstopatmap"
+        android:icon="@drawable/ic_action_run"
+        android:title="定位开关"
+        com.soso.evaextra:showAsAction="always"/>
+    <item
+        android:id="@+id/action_showall"
+        android:title="SDK"
+        com.soso.evaextra:showAsAction="never"/>
+    <item
+        android:id="@+id/action_showline"
+        android:title="连线"
+        com.soso.evaextra:showAsAction="always"/>
+    <item
+        android:id="@+id/action_count"
+        android:title="点数"
+        com.soso.evaextra:showAsAction="always"/>
+    <item
+        android:id="@+id/action_setLocation"
+        android:title="纠错"
+        com.soso.evaextra:showAsAction="always"/>
+    <item
+        android:id="@+id/action_revert"
+        android:title="返回"
+        android:icon="@drawable/ic_action_list_128"
+        com.soso.evaextra:showAsAction="never"/>
+
+</menu>
