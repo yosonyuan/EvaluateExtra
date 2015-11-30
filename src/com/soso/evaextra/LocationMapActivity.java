@@ -578,7 +578,7 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 		 * 因为十字中心点永远在屏幕的中央，所以我们只需要拿到中央点的位置，然后进行右移即可
 		 */
 		private void moveToRight(){
-			tencentMap.animateCamera(CameraUpdateFactory.scrollBy(-10, 0)) ;
+			tencentMap.animateCamera(CameraUpdateFactory.scrollBy(-20, 0)) ;
 		}
 		
 		private void moveToLeft(){
@@ -586,7 +586,7 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 		}
 		
 		private void moveToUp(){
-			tencentMap.animateCamera(CameraUpdateFactory.scrollBy(0, 10)) ;
+			tencentMap.animateCamera(CameraUpdateFactory.scrollBy(0, 20)) ;
 		}
 		
 		private void moveToDown(){
@@ -595,19 +595,35 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 		
 		@Override
 		public void onMapLoaded() {
-			System.out.println("这个方法走了没有");
 //			LatLng latlng = tencentMap.getCameraPosition().target;
-			LatLng ll = new LatLng(39.908534 , 116.397510);
-			tencentMap.animateCamera(
-					CameraUpdateFactory.newLatLngZoom(ll  , 15), 1, new CancelableCallback() {
-				@Override
-				public void onFinish() {
-				}
-				@Override
-				public void onCancel() {
-				}
-			});
+			List<Result> result = mAppContext.getLocations(mKey, 1);
 			
+			System.out.println("result ===" + result.toString());
+			
+			if(result == null || result.equals("") || result.toString().equals("[]")){
+				LatLng ll = new LatLng(39.908534 , 116.397510);
+				tencentMap.animateCamera(
+						CameraUpdateFactory.newLatLngZoom(ll  , 15), 1, new CancelableCallback() {
+					@Override
+					public void onFinish() {
+					}
+					@Override
+					public void onCancel() {
+					}
+				});
+			}else{
+				Result loc = result.get(0);
+				LatLng ll = new LatLng(loc.latitude, loc.longitude);
+				tencentMap.animateCamera(
+						CameraUpdateFactory.newLatLngZoom(ll  , 15), 1, new CancelableCallback() {
+					@Override
+					public void onFinish() {
+					}
+					@Override
+					public void onCancel() {
+					}
+				});
+			}
 		}
 	
 }

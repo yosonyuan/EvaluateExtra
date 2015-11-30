@@ -16,6 +16,7 @@ import android.net.TrafficStats;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Process;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -383,7 +384,10 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 				"key_location_settings_url_index", "0");
 		//locationManager.setServerIndex(Integer.valueOf(value));
 
-		locationManager.requestLocationUpdates(request, this);
+		HandlerThread ht = new HandlerThread("Proxy");
+		ht.start();
+		locationManager.requestLocationUpdates(request, this, ht.getLooper());
+		//locationManager.requestLocationUpdates(request, this);
 		locationManager.startDistanceCalculate(this);
 //		double[] a = {40.074403333333333,116.35256};
 //		double[] b = {1,2};

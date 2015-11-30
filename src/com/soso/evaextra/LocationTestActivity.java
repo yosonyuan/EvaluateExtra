@@ -201,12 +201,6 @@ public class LocationTestActivity extends ActionBarActivity implements
 					mTvSpeed.setText(df.format(result.getSpeed()));
 					mTvSpeed.setTextColor(Color.RED);
 				}else{
-//					if(result.getSpeed() == 0.0){
-//						mTvSpeed.setText("-1");
-//						mTvSpeed.setTextColor(Color.RED);
-//					}else{
-//						mTvSpeed.setText(String.valueOf(result.getSpeed()));
-//					}
 					mTvSpeed.setText("-1");
 					mTvSpeed.setTextColor(Color.RED);
 				}
@@ -746,28 +740,33 @@ public class LocationTestActivity extends ActionBarActivity implements
 	private void updateFrags() {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 
-		LocationStatusFrag mFrag1 = (LocationStatusFrag) fragmentManager
+		final LocationStatusFrag mFrag1 = (LocationStatusFrag) fragmentManager
 				.findFragmentById(R.id.frag1);
-		LocationStatusFrag mFrag2 = (LocationStatusFrag) fragmentManager
+		final LocationStatusFrag mFrag2 = (LocationStatusFrag) fragmentManager
 				.findFragmentById(R.id.frag2);
-		LocationStatusFrag mFrag3 = (LocationStatusFrag) fragmentManager
+		final LocationStatusFrag mFrag3 = (LocationStatusFrag) fragmentManager
 				.findFragmentById(R.id.frag3);
-		LocationStatusFrag mFrag4 = (LocationStatusFrag) fragmentManager
+		final LocationStatusFrag mFrag4 = (LocationStatusFrag) fragmentManager
 				.findFragmentById(R.id.frag4);
 
-		if (mFrag1 != null) {
-			mFrag1.update();
-		}
-		if (mFrag2 != null) {
-			mFrag2.update();
-		}
-		if (mFrag3 != null) {
-			mFrag3.update();
-		}
-		if (mFrag4 != null) {
-			mFrag4.update();
-		}
-
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (mFrag1 != null) {
+					mFrag1.update();
+				}
+				if (mFrag2 != null) {
+					mFrag2.update();
+				}
+				if (mFrag3 != null) {
+					mFrag3.update();
+				}
+				if (mFrag4 != null) {
+					mFrag4.update();
+				}
+			}
+		});
 	}
 
 	class AppUpdaterTask extends AsyncTask<Void, Void, AppUpdateInfo> {

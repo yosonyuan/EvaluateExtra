@@ -21,7 +21,7 @@
     <item
         android:id="@+id/action_version"
         android:icon="@drawable/ic_action_settings"
-        android:title="version_1.0.7"
+        android:title="version_1.1.7"
         com.soso.evaextra:showAsAction="never"/>
     <!--<item
         android:id="@+id/action_screenshot"
