@@ -42,6 +42,7 @@
         android:name="com.soso.evaextra.AppContext"
         android:theme="@style/AppTheme" >
         <!--oldkey 47a1c485536e36a650c18f71db6e31d7 0611fc183dd8d117ad2d8192f0db9a76-->
+        <!--0611fc183dd8d117ad2d8192f0db9a76-->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b1e9bf400d77c3ceaa230dd5eb6cbca2" />
