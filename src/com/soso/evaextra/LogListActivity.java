@@ -339,7 +339,7 @@ public class LogListActivity extends ActionBarActivity implements
 			filename = "2048" + filename.substring(4, filename.length());
 		}
 		HttpPost post = new HttpPost(
-				"http://111.161.52.33:10001/DataWarehouse/UploadFile?type=compare&path="
+				"http://lstest.map.qq.com/DataWarehouse/UploadFile?type=compare&path="
 						+ filename);
 
 		// MultipartEntityBuilder builder = MultipartEntityBuilder.create();

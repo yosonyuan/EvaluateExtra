@@ -69,6 +69,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 
 	private final LocationService mContext;
 	private final SimpleDb mSimpleDb;
+	private static HandlerThread ht;
 	
 	/**
 	 * 用于单点测试的日志
@@ -384,7 +385,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 				"key_location_settings_url_index", "0");
 		//locationManager.setServerIndex(Integer.valueOf(value));
 
-		HandlerThread ht = new HandlerThread("Proxy");
+		ht = new HandlerThread("Proxy");
 		ht.start();
 		locationManager.requestLocationUpdates(request, this, ht.getLooper());
 		//locationManager.requestLocationUpdates(request, this);
@@ -461,6 +462,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 	
 
 	private void stopTencentLocation() {
+		ht.quit();
 		TencentDistanceAnalysis tda = TencentLocationManager.getInstance(mContext).stopDistanceCalculate(this);
 		TencentLocationManager.getInstance(mContext).removeUpdates(this);
 		String line = "D|confidence=" + tda.getConfidence() + ",gpscount=" + tda.getGpsCount() + ",networkcount=" + tda.getNetworkCount()+ "\n";

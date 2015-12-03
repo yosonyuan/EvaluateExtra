@@ -13,7 +13,8 @@ public static String postToServlet(String json) throws Exception{
 //		URL urlPath = new URL("http://localhost/data_monotor/dataDeal");
 //		String url = "http://10.171.89.14:8080/data_monitor/dataDeal";
 	//http://111.161.52.33:10001/data_monitor/index.jsp
-		String url = "http://111.161.52.33:10001/data_monitor/dataDeal";
+		//String url = "http://111.161.52.33:10001/data_monitor/dataDeal";
+	    String url = "http://lstest.map.qq.com/DataWarehouse/UploadFile";
 	
 		URL urlPath = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) urlPath.openConnection();
