@@ -19,7 +19,7 @@
         com.soso.evaextra:showAsAction="always"/>
     <item
         android:id="@+id/action_setLocation"
-        android:title="纠错"
+        android:title="PDR起点"
         com.soso.evaextra:showAsAction="always"/>
     <item
         android:id="@+id/action_revert"

@@ -13,6 +13,5 @@
     <string name="ph_wifi_state">WiFi: %1$s</string>
     <string name="ph_gps_state">GPS: %1$s</string>
     <string name="ph_cid">CID: %1$s</string>
-    <string name="ph_speed">SPEED: %1$s</string>
 
 </resources>

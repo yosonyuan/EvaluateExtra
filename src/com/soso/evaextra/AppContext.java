@@ -18,6 +18,8 @@ import com.soso.evaluateextra.R;
 import com.tencent.map.geolocation.TencentLocationManager;
 import com.tencent.map.geolocation.internal.TencentExtraKeys;
 import com.tencent.map.geolocation.internal.TencentLog;
+//import com.tencent.map.geolocation.internal.TencentExtraKeys;
+//import com.tencent.map.geolocation.internal.TencentLog;
 
 public final class AppContext extends Application {
 
@@ -40,9 +42,9 @@ public final class AppContext extends Application {
 	
 	public TencentLocationManager tlm ;
 
-	public static final String TITLE_TENCENT = "腾讯 V4.5.7";
-	public static final String TITLE_BAIDU = "百度 V6.1.2";
-	public static final String TITLE_AMAP = "高德 V2.0.0";
+	public static final String TITLE_TENCENT = "腾讯 V4.8.8.8";
+	public static final String TITLE_BAIDU = "百度 V7.0";
+	public static final String TITLE_AMAP = "高德 V2.8.0";
 	public static final String TITLE_SOGOU = "搜狗 V1.0";
 	public static final String[] TITLES = new String[] { TITLE_TENCENT,
 			TITLE_BAIDU, TITLE_AMAP, TITLE_SOGOU };
@@ -107,6 +109,7 @@ public final class AppContext extends Application {
 		mLocationsMap.put(BAIDU, mBdLocations);
 		mLocationsMap.put(AMAP, mAMapLocations);
 		mLocationsMap.put(SOGOU, mSogouLocations);
+		//DODODO
 		TencentExtraKeys.setTencentLog(new TencentLog() {
 			public void println(String t, int l, String m) {
 

@@ -90,7 +90,7 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 				Toast.makeText(LocationMapActivity.this, "上传文件成功", 1).show();
 				break;
 			case 1:
-				Toast.makeText(LocationMapActivity.this, "上传文件失败", 1).show();
+				Toast.makeText(LocationMapActivity.this, "上传文件", 1).show();
 				break;
 			default:
 				break;
@@ -280,64 +280,64 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 				updateActionBarTitile();
 				mTimerHandler.sendEmptyMessageDelayed(1, 1000);
 				item.setIcon(R.drawable.ic_action_stop);
+				//android中的dialog为异步操作，因此广播放在这里不能保证执行的先后顺序，所以需要放入到点击事件里面
+				Intent it = new Intent();
+				it.setAction(LocationTestActivity.RUN_STOP_ACTION);
+				sendBroadcast(it);
 			} else {
-				
-				SharedPreferences sp = getSharedPreferences("filename", Context.MODE_PRIVATE);
-				final String filename = sp.getString("name", "文件不存在");
-				
-				File appPath = new File(Environment.getExternalStorageDirectory(),"SingleTest");
-				File subdir = new File(appPath, SDF.format(new Date()));
-				final File childFile = new File(subdir.getAbsolutePath(), filename +  "_singletestshow_all");
-				
-				//增加一个提示框，确认即认为当前的数据是有效的，否则认为无效，并删除当前的日志文件
-				AlertDialog alertDialog = new AlertDialog.Builder(this)
-				.setMessage("是否确认这次记录的位置是有效的？")
-				.setPositiveButton("确定", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						//点击确定的时候即认为当前文件有效，会记录下文件，并上传文件内容到服务器
-						if(childFile.exists() && childFile.length() > 0){
-							//将产生singletest文件上传到服务器端
-							new Thread(){
-								@Override
-								public void run() {
-									try {
-										String data = ReadSingleTestFile.parseSingleTestFile(childFile);
-										String result = ConnectToServlet.postToServlet(data);
-//										mUploadHandler.obtainMessage(0).sendToTarget();
-									} catch (Exception e) {
-										mUploadHandler.obtainMessage(1).sendToTarget();
-									}
-								}
-							}.start();
-						}
-						}
-					}).setNegativeButton("取消", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						//点击取消的时候就认为是无效的，并要删除当前记录的文件
-						if(childFile.exists()){
-							boolean isdelete = childFile.delete();
-						}
-					}
-				}).create();
-				Window window = alertDialog.getWindow();
-				WindowManager.LayoutParams lp = window.getAttributes();
-				lp.alpha = 0.9f;
-				window.setGravity(Gravity.TOP);
-				window.setAttributes(lp);
-				alertDialog.show();
-				//将SharedPreferences中的数据删除掉
-				SharedPreferences.Editor editor =  sp.edit();
-				editor.remove("name");
-				editor.commit();
+				setLocation(1);
+//				SharedPreferences sp = getSharedPreferences("filename", Context.MODE_PRIVATE);
+//				final String filename = sp.getString("name", "文件不存在");
+//				
+//				File appPath = new File(Environment.getExternalStorageDirectory(),"SingleTest");
+//				File subdir = new File(appPath, SDF.format(new Date()));
+//				final File childFile = new File(subdir.getAbsolutePath(), filename +  "_singletestshow_all");
+//				
+//				//增加一个提示框，确认即认为当前的数据是有效的，否则认为无效，并删除当前的日志文件
+//				AlertDialog alertDialog = new AlertDialog.Builder(this)
+//				.setMessage("是否确认这次记录的位置是有效的？")
+//				.setPositiveButton("确定", new OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						//点击确定的时候即认为当前文件有效，会记录下文件，并上传文件内容到服务器
+//						if(childFile.exists() && childFile.length() > 0){
+//							//将产生singletest文件上传到服务器端
+//							new Thread(){
+//								@Override
+//								public void run() {
+//									try {
+//										String data = ReadSingleTestFile.parseSingleTestFile(childFile);
+//										String result = ConnectToServlet.postToServlet(data);
+////										mUploadHandler.obtainMessage(0).sendToTarget();
+//									} catch (Exception e) {
+//										mUploadHandler.obtainMessage(1).sendToTarget();
+//									}
+//								}
+//							}.start();
+//						}
+//						}
+//					}).setNegativeButton("取消", new OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						//点击取消的时候就认为是无效的，并要删除当前记录的文件
+//						if(childFile.exists()){
+//							boolean isdelete = childFile.delete();
+//						}
+//					}
+//				}).create();
+//				Window window = alertDialog.getWindow();
+//				WindowManager.LayoutParams lp = window.getAttributes();
+//				lp.alpha = 0.9f;
+//				window.setGravity(Gravity.TOP);
+//				window.setAttributes(lp);
+//				alertDialog.show();
+//				//将SharedPreferences中的数据删除掉
+//				SharedPreferences.Editor editor =  sp.edit();
+//				editor.remove("name");
+//				editor.commit();
 				
 				item.setIcon(R.drawable.ic_action_run);
 			}
-			//android中的dialog为异步操作，因此广播放在这里不能保证执行的先后顺序，所以需要放入到点击事件里面
-			Intent it = new Intent();
-			it.setAction(LocationTestActivity.RUN_STOP_ACTION);
-			sendBroadcast(it);
 			
 			return true;
 		case R.id.action_showline:
@@ -354,7 +354,7 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 			setShowAll(!isShowAll());
 			return true;
 		case R.id.action_setLocation://设置当前坐标
-			setLocation();
+			setLocation(2);
 			return true;
 		case R.id.action_revert://返回
 			this.finish();
@@ -408,7 +408,7 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 		}
 	};
 	
-	private void setLocation() {
+	private void setLocation(final int i) {
 		AlertDialog alertDialog = new AlertDialog.Builder(this)
 				.setMessage("设置十字中心为当前准确位置？")
 				.setPositiveButton("确定", new OnClickListener() {
@@ -420,6 +420,11 @@ public class LocationMapActivity extends ActionBarActivity implements android.vi
 						it.putExtra("latitude", gp.latitude);
 						it.putExtra("longtitude", gp.longitude);
 			            sendBroadcast(it);     
+			            if(i== 1){
+							Intent it2 = new Intent();
+							it2.setAction(LocationTestActivity.RUN_STOP_ACTION);
+							sendBroadcast(it2);
+			            }
 						}
 				}).setNegativeButton("取消", null).create();
 		Window window = alertDialog.getWindow();

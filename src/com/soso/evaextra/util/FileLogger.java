@@ -72,7 +72,11 @@ public class FileLogger {
 	public String mergePointShowLog(long duration, String deviceId, File tmp) {
 		File merge = new File(path, name.replace("_pointshow", "") + "_"
 				+ duration + "_" + Build.MODEL + "_" + deviceId);
-		ByteSink sink = Files.asByteSink(merge, FileWriteMode.APPEND);
+		if(merge.exists())
+			merge.delete();
+		merge = new File(path, name.replace("_pointshow", "") + "_"
+				+ duration + "_" + Build.MODEL + "_" + deviceId);
+		ByteSink sink = Files.asByteSink(merge,FileWriteMode.APPEND);
 
 		for (File log : fileMap.values()) {
 			if (log.getName().endsWith(AppContext.TENCENT)) {

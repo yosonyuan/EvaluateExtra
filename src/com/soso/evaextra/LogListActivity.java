@@ -1,6 +1,8 @@
 package com.soso.evaextra;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -335,9 +337,19 @@ public class LogListActivity extends ActionBarActivity implements
 		// "http://111.161.52.33:10001/DataWarehouse/compare.jsp");
 		String filename = file.getName().replace(" ", "_");
 		// config
-		if (Auto.AUTO_UPLOAD && filename.length() > 4) {
-			filename = "2048" + filename.substring(4, filename.length());
-		}
+//		if (Auto.AUTO_UPLOAD && filename.length() > 4) {
+//			filename = "2048" + filename.substring(4, filename.length());
+//		}
+//		if(file.length()<20 * 1024){
+//	          BufferedReader input = new BufferedReader (new FileReader(file));
+//	          String text;
+//	          while((text = input.readLine()) != null)
+//	        	  if(text.contains("s|")){
+//	        		  filename += "_SINGLE";
+//	        		  break;
+//	        	  }
+//		}
+		
 		HttpPost post = new HttpPost(
 				"http://lstest.map.qq.com/DataWarehouse/UploadFile?type=compare&path="
 						+ filename);

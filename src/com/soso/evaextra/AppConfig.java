@@ -50,7 +50,7 @@ public final class AppConfig {
 		editor.putBoolean(AppContext.TENCENT, checked[0]);
 		editor.putBoolean(AppContext.BAIDU, checked[1]);
 		editor.putBoolean(AppContext.AMAP, checked[2]);
-		editor.putBoolean(AppContext.SOGOU, checked[3]);
+		editor.putBoolean(AppContext.SOGOU, false);
 		editor.commit();
 	}
 

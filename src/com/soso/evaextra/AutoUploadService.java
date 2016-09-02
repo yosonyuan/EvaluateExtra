@@ -13,8 +13,6 @@ import android.util.Log;
 import com.soso.evaextra.SimpleDb.LogEntry;
 import com.soso.evaextra.SimpleDb.SimpleDbUtil;
 import com.soso.evaextra.config.Auto;
-import com.soso.evaextra.update.AppUpdater;
-import com.soso.evaextra.update.AppUpdater.AppUpdateInfo;
 
 public class AutoUploadService extends IntentService {
 	private static final String TAG = "AutoUploadService";
@@ -55,11 +53,6 @@ public class AutoUploadService extends IntentService {
 			db.close();
 		} else if ("com.soso.evaextra.ACTION_CHECK_UPDATE".equals(action)) {
 			AppContext appContext = AppContext.getInstance(this);
-			AppUpdater updater = new AppUpdater();
-			AppUpdateInfo info = updater.check();
-			if (info.getCode() > appContext.getVersionCode()) {
-				newPkgFoundNoti();
-			}
 		}
 	}
 
@@ -78,7 +71,7 @@ public class AutoUploadService extends IntentService {
 			return false;
 		}
 		File file = new File(entry.log_path);
-		if (file.exists() && (file.length() > 1024 * 20 )) {
+		if (file.exists()) {
 			Log.i(TAG, "uploading " + file.getAbsolutePath());
 			try {
 				LogListActivity.upload(file);

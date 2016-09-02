@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Process;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -34,10 +36,6 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.sogou.map.loc.SGErrorListener;
-import com.sogou.map.loc.SGLocClient;
-import com.sogou.map.loc.SGLocListener;
-import com.sogou.map.loc.SGLocation;
 import com.soso.evaextra.LocationService.ObservableExt;
 import com.soso.evaextra.SimpleDb.LogEntry;
 import com.soso.evaextra.SimpleDb.SimpleDbUtil;
@@ -56,7 +54,7 @@ import com.tencent.map.geolocation.internal.TencentLog;
 import com.tencent.map.geolocation.internal.TencentLogImpl;
 
 public class Proxy implements TencentDistanceListener,TencentLocationListener, BDLocationListener,
-		AMapLocationListener, SGLocListener, SGErrorListener {
+		AMapLocationListener {
 	private static final boolean SOGOU_GCJ02 = true;
 	private static final double[] SOGOU_LAT_LNG = new double[2];
 
@@ -93,19 +91,19 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 	private AMapLocation aLocation = null;
 	private BDLocation bLocation = null;
 	private double adistance = 0;
-	private double sdistance = 0;
-	private SGLocation sLocation = null;
 
 	private final AppStatus mAppStatus;
 	private final LocationCouter mLocationCouter;
+	private TencentLog mLog;
 
 	private LocationClient mBaiduLocationClient;
 
-	private SGLocClient mSgLocClient;
+	//private SGLocClient mSgLocClient;
 	
 	private AMapLocationClient mAmapLocationClient;
 	
 	private boolean mIsRunning;
+	private boolean mIsManTest = false;
 	
 	public static final String SET_LOCATION_ACTION =
 	        "com.soso.evaextra.ACTION_SET_LOCATION";
@@ -115,6 +113,9 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 	
 	public static final String SEND_TENCENT_LOCATION_SPEED = 
 			"com.soso.evaextra.ACTION_SEND_TENCENT_LOCATION_SPEED";
+	
+	public static final String SEND_TENCENT_LOCATION_GPS = 
+			"com.soso.evaextra.ACTION_SEND_TENCENT_LOCATION_GPS";
 	
 	public static final String STOP_LOCATION = 
 			"com.soso.evaextra.STOP_LOCATION";
@@ -153,9 +154,18 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		this.mLocationCouter = AppContext.getInstance(context)
 				.getLocationCouter();	
 		telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-		imei = telephonyManager.getDeviceId();
+		try{
+			imei = telephonyManager.getDeviceId();
+		}catch(Exception e){
+		}catch(Error e){}
+		ht = new HandlerThread("Proxy");
+		//DODODO
+		File file = mContext.getExternalCacheDir();
+		mLog = new TencentLogImpl(mContext, file);
+		TencentExtraKeys.addTencentLog(mLog);
 	}
 																				
+
 	public void startLocation(boolean[] checked) {
 		if (mIsRunning) {
 			return;
@@ -201,15 +211,15 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			startAmapLocation();
 			Log.i(TAG, "amap started ");
 		}
-		if (checked[3]) {
-			startSogouLocation();
-			Log.i(TAG, "sogou started ");
-		}
+//		if (checked[3]) {
+//			startSogouLocation();
+//			Log.i(TAG, "sogou started ");
+//		}
 		mIsRunning = true;
 		IntentFilter filter = new IntentFilter(SET_LOCATION_ACTION);
 		mContext.registerReceiver(mSetLocationReceiver, filter);
 		
-//		mTimerHandler.sendEmptyMessageDelayed(1, 60*1000);
+		mTimerHandler.sendEmptyMessageDelayed(1, 60*1000);
 	}
 
     /**
@@ -260,13 +270,11 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		result.setImei(imei);
 		
 		updateLog(result,AppContext.LOCATION_CORRECTION,false);
+		mIsManTest = true;
 		
 	}	
 
 	public void startLocation(List<String> exclude) {
-		
-		startTencentLocation();
-		Log.i(TAG, "tencent started ");
 
 		startBaiduLocation();
 		Log.i(TAG, "baidu started ");
@@ -274,8 +282,11 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		startAmapLocation();
 		Log.i(TAG, "amap started ");
 		
-		startSogouLocation();
-		Log.i(TAG, "sogou started ");
+		startTencentLocation();
+		Log.i(TAG, "tencent started ");
+		
+//		startSogouLocation();
+//		Log.i(TAG, "sogou started ");
 		
 		//mTimerHandler.sendEmptyMessageDelayed(1, 60*1000);
 	}
@@ -302,8 +313,8 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		stopAmapLocation();
 		Log.i(TAG, "amap stopped ");
 
-		stopSogouLocation();
-		Log.i(TAG, "sogou stopped ");
+//		stopSogouLocation();
+//		Log.i(TAG, "sogou stopped ");
 		//停止定位时更新产生的数据到数据库中
 		File tmp = updateDb();
 
@@ -315,7 +326,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		//因为不能确定广播何时才能够完成，所以在这里不移除监听，改为在二次监听结束后移除
 //		mContext.unregisterReceiver(mSetLocationReceiver);
 		isStop = true;
-		
+		mIsManTest = false;
 		mTimerHandler.removeMessages(1);
 		
 	}
@@ -328,26 +339,43 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 	* @return File
 	* @throws
 	 */
-	private File updateDb() {
+	private synchronized File updateDb() {
 		long id = mAppStatus.logId;
 		LogEntry entry = SimpleDbUtil.findById(mSimpleDb, id);
 		entry.log_duration = mAppStatus.getLocationDuration();
 		File tmp = mContext.getFileStreamPath("tmp");
+		String deviceIdString = getDeviceId();
+		if(mIsManTest){
+			deviceIdString="SINGLE_"+deviceIdString;
+		}
 		entry.log_path = mPointShowLog.mergePointShowLog(
-				entry.log_duration / 1000 / 60, getDeviceId(), tmp);
+				entry.log_duration / 1000 / 60, deviceIdString, tmp);
 		SimpleDbUtil.update(mSimpleDb, entry);
 		return tmp;
 	}
 	/**
 	 * 定时更新数据库计时器,防止因程序crash丢失文件
 	 */
+//	private final Handler mTimerHandler = new Handler() {
+//		public void handleMessage(final android.os.Message msg) {
+//			
+//			File tmp = updateDb();
+//			if (tmp.exists()) {
+//				tmp.delete();
+//			}
+//			sendEmptyMessageDelayed(1, 60*1000);
+//		}
+//	};
+	
 	private final Handler mTimerHandler = new Handler() {
+		
+		@Override
 		public void handleMessage(final android.os.Message msg) {
 			
 			File tmp = updateDb();
-			if (tmp.exists()) {
-				tmp.delete();
-			}
+//			if (tmp.exists()) {
+//				tmp.delete();
+//			}
 			sendEmptyMessageDelayed(1, 60*1000);
 		}
 	};
@@ -365,17 +393,16 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		mAppStatus.tencentStart = SystemClock.elapsedRealtime();
 
 		TencentLocationRequest request = TencentLocationRequest.create()
-				.setInterval(5000)
+				.setInterval(5*1000)
 				.setRequestLevel(TencentLocationRequest.REQUEST_LEVEL_NAME)
-				.setAllowCache(true);
+				.setAllowCache(true)
+				.setAllowDirection(true);
 //		request = TencentExtraKeys.setAllowGps(request, false);
 //		request = TencentLocationManager.setAllowGps(request, false);
 //		if(!TencentLocationManager.isAllowGps(request)){
 //			Log.e("Proxy", "gps is closed");
 //		}
-		File file = mContext.getExternalCacheDir();
-		TencentLog log = new TencentLogImpl(mContext, file);
-		TencentExtraKeys.addTencentLog(log);
+
 		TencentLocationManager locationManager = TencentLocationManager
 				.getInstance(mContext);
 
@@ -385,15 +412,11 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 				"key_location_settings_url_index", "0");
 		//locationManager.setServerIndex(Integer.valueOf(value));
 
-		ht = new HandlerThread("Proxy");
-		ht.start();
+		if(!ht.isAlive())
+			ht.start();
 		locationManager.requestLocationUpdates(request, this, ht.getLooper());
 		//locationManager.requestLocationUpdates(request, this);
 		locationManager.startDistanceCalculate(this);
-//		double[] a = {40.074403333333333,116.35256};
-//		double[] b = {1,2};
-//		if(TencentLocationUtils.wgs84ToGcj02(a, b))
-//			Log.e("a", b[0]+","+b[1]);
 	}
 
 	private void startBaiduLocation() {
@@ -410,7 +433,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		option.setIsNeedAddress(true);
 		option.setCoorType("gcj02");
 		option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);// 设置高精度定位模式
-		option.setScanSpan(5000);
+		option.setScanSpan(5*1000);
 		mBaiduLocationClient.setLocOption(option);
 		mBaiduLocationClient.registerLocationListener(this);
 		// open baudu listener
@@ -429,12 +452,13 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		amapOption.setNeedAddress(true);
 		//设置是否只定位一次,默认为false
 		amapOption.setOnceLocation(false);
+		//Option.setOnceLocationLatest(true);
 		//设置是否强制刷新WIFI，默认为强制刷新
 		amapOption.setWifiActiveScan(true);
 		//设置是否允许模拟位置,默认为false，不允许模拟位置
 		amapOption.setMockEnable(false);
 		//设置定位间隔,单位毫秒,默认为2000ms
-		amapOption.setInterval(5000);
+		amapOption.setInterval(5*1000);
 		//给定位客户端对象设置定位参数
 		mAmapLocationClient.setLocationOption(amapOption);
 		//监听回调
@@ -443,26 +467,26 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		mAmapLocationClient.startLocation();
 	}
 
-	private void startSogouLocation() {
-		if (mSgLocClient == null) {
-			mSgLocClient = new SGLocClient(mContext);
-			mSgLocClient.setKey("b9bde990238e77b6a80297ff29ccfa00a244a598");
-			mSgLocClient.setStrategy(SGLocClient.NETWORK_FIRST);
-			// clientInst.addErrorListener(errListener);
-			if (SOGOU_GCJ02) {
-				mSgLocClient.setProp("go2map-coordinate", "latlon");
-			}
-		}
-		mAppStatus.sogouStart = SystemClock.elapsedRealtime();
-
-		mSgLocClient.addLocListener(this);
-		mSgLocClient.watchLocation(5000);
-	}
+//	private void startSogouLocation() {
+//		if (mSgLocClient == null) {
+//			mSgLocClient = new SGLocClient(mContext);
+//			mSgLocClient.setKey("b9bde990238e77b6a80297ff29ccfa00a244a598");
+//			mSgLocClient.setStrategy(SGLocClient.NETWORK_FIRST);
+//			// clientInst.addErrorListener(errListener);
+//			if (SOGOU_GCJ02) {
+//				mSgLocClient.setProp("go2map-coordinate", "latlon");
+//			}
+//		}
+//		mAppStatus.sogouStart = SystemClock.elapsedRealtime();
+//
+//		mSgLocClient.addLocListener(this);
+//		mSgLocClient.watchLocation(5000);
+//	}
 
 	
 
+	@SuppressLint("NewApi")
 	private void stopTencentLocation() {
-		ht.quit();
 		TencentDistanceAnalysis tda = TencentLocationManager.getInstance(mContext).stopDistanceCalculate(this);
 		TencentLocationManager.getInstance(mContext).removeUpdates(this);
 		String line = "D|confidence=" + tda.getConfidence() + ",gpscount=" + tda.getGpsCount() + ",networkcount=" + tda.getNetworkCount()+ "\n";
@@ -472,6 +496,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
+		
 	}
 
 	private void stopBaiduLocation() {
@@ -494,15 +519,15 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 		}
 		
 	}
-	private void stopSogouLocation() {
-		if (mSgLocClient != null) {
-			mSgLocClient.clearWatch();
-			mSgLocClient.removeErrorListener(this);
-			mSgLocClient.removeLocListener(this);
-			mSgLocClient.destroy();
-			mSgLocClient = null;
-		}
-	}
+//	private void stopSogouLocation() {
+//		if (mSgLocClient != null) {
+//			mSgLocClient.clearWatch();
+//			mSgLocClient.removeErrorListener(this);
+//			mSgLocClient.removeLocListener(this);
+//			mSgLocClient.destroy();
+//			mSgLocClient = null;
+//		}
+//	}
 	/**
 	 * 将 result 加入全局记录中并通知观察者
 	 * 
@@ -548,6 +573,31 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			result.setData(0 + "");
 			result.setLat(latitude);
 			result.setLng(longitude);
+			String provider = "Network";
+			switch (amapLocation.getLocationType()) {
+			case 1:
+				provider = "G";
+				break;
+			case 2:
+				provider = "sa";
+				break;
+			case 3:
+				provider = "fa";
+				break;
+			case 4:
+				provider = "ca";
+				break;
+			case 5:
+				provider = "W";
+				break;
+			case 6:
+				provider = "C";
+				break;
+			case 8:
+				provider = "of";
+				break;
+			}
+			result.setProvider(provider);
 			result.setRadius(accurancy);
 			result.setOffSet(offset + "");	
 			result.setDistance(adistance/1000);
@@ -595,6 +645,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			result.setLng(longitude);
 			result.setRadius(accurancy);
 			result.setOffSet(offset + "");
+			result.setProvider(location.getNetworkLocationType());
 			result.setDistance(bdistance/1000);
 			result.setImei(imei);
 		} else {
@@ -610,13 +661,20 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 	@Override
 	public void onLocationChanged(TencentLocation arg0, int arg1, String arg2) {
 		// TODO Auto-generated method stub
-		Log.e("a", arg0.getAccuracy()+"");
 	}
 
 	@Override
 	public void onStatusUpdate(String arg0, int arg1, String arg2) {
 		// TODO Auto-generated method stub
-		
+		//将定位的结果通过广播发送到LocationTestActivity中去，实时的更新speed元素
+		if(arg0.equals("gps")){
+			Intent gpsStatus = new Intent();
+			gpsStatus.setAction(SEND_TENCENT_LOCATION_GPS);
+			Bundle bundle = new Bundle();
+			bundle.putInt("status", arg1);
+			gpsStatus.putExtra("bundle", bundle);
+			mContext.sendBroadcast(gpsStatus);
+		}
 		
 	}
 	
@@ -653,7 +711,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			result.setOffSet(offset + "");
 			result.setDistance(distance);
 			result.setSpeed(location.getSpeed());
-			result.setProvider(location.getProvider());
+			result.setProvider(location.getSourceProvider());
 			result.setImei(imei);
 			
 			//腾讯定位成功后，将点的数据传送到LocationMapActivity类中，然后在LocationMapActivity类中将十字中心的点的坐标设置为腾讯的坐标
@@ -671,19 +729,24 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			Intent speed = new Intent();
 			speed.setAction(SEND_TENCENT_LOCATION_SPEED);
 			Bundle bundle = new Bundle();
-			bundle.putSerializable("result", result);
+			bundle.putString("result", location.getMotion());
+			//bundle.putString("result", "unknown");
 			speed.putExtra("bundle", bundle);
 			mContext.sendBroadcast(speed);
 			
 			//请求的query，需要存储在日志文件中
+			//DODODO
 			String req = TencentExtraKeys.getRawQuery(location);
+			//String req = "";
 			mUserLog.logWithoutEncrypt(AppContext.ALL_SDKS, req);
 			mSinglePointLog.logWithoutEncrypt(AppContext.ALL_SDKS, req);
 			String line = "T|" + latitude + "," + longitude + "," + accurancy
-					+ "|" + req + "|" + System.currentTimeMillis() +","+distance+","+location.getSpeed()+","+location.getProvider()+"\n";
+					+ "|" + req + "|" + System.currentTimeMillis() +","+distance+","+location.getProvider()+","+location.getMotion()+"\n";
+					//location.getVerifyKey()+","+location.getSourceProvider()+"\n";
 			try {
 				Files.append(SosoLocUtils.encryptBytes(line.getBytes()),
 						mContext.getFileStreamPath("tmp"));
+
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -693,63 +756,63 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			mLocationCouter.increaseLocationCount(AppContext.TENCENT);
 		}
 
-		mAppStatus.setAddr(AppContext.TENCENT,location.getAddress());
+		mAppStatus.setAddr(AppContext.TENCENT,location.getAddress()+location.getName());
 		updateLog(result, AppContext.TENCENT, true);
 	}
-	/*********************************sogou***************************************/
-	@Override
-	public void onError(int error, String arg1) {
-		Result result = new Result(AppContext.SOGOU);
-		System.out.println("test " + error);
-		result.setReason("sogou定位失败");
-		result.setError(error + "");
-		mLocationCouter.increaseLocationCount(AppContext.SOGOU);
-		updateLog(result, AppContext.SOGOU, false);
-	}
-    //sogou
-	@Override
-	public void onLocationUpdate(SGLocation location) {
-		System.out.println("test " + location);
-		trafficStat();
-		if (Conditions.isNull(location)) {
-			return;
-		}
-		if (mAppStatus.sogouFirst == -1) {
-			mAppStatus.sogouFirst = SystemClock.elapsedRealtime();
-		}
-
-		Result result = new Result(AppContext.SOGOU);
-		result.setTime(TIME2.format(new Date()));
-
-		result.setReason("S");
-		result.setError(0 + "");
-		
-
-		double latitude = location.getLatitude();
-		double longitude = location.getLongitude();
-		float accurancy = location.getAccuracy();
-		int offset = 5;
-
-		if(sLocation != null){
-			sdistance+=TencentLocationUtils.distanceBetween(bLocation.getLatitude(), bLocation.getLongitude(), latitude, longitude);
-			sLocation= location;
-		}
-		if (SOGOU_GCJ02) {
-			EvilTransform.transform(latitude, longitude, SOGOU_LAT_LNG);
-			latitude = SOGOU_LAT_LNG[0];
-			longitude = SOGOU_LAT_LNG[1];
-		}
-		result.setData(0 + "");
-
-		result.setLat(latitude);
-		result.setLng(longitude);
-		result.setRadius(accurancy);
-		result.setOffSet(offset + "");
-		result.setDistance(sdistance/10000);
-		result.setImei(imei);
-		
-		updateLog(result,AppContext.SOGOU,true);
-	}
+//	/*********************************sogou***************************************/
+//	@Override
+//	public void onError(int error, String arg1) {
+//		Result result = new Result(AppContext.SOGOU);
+//		System.out.println("test " + error);
+//		result.setReason("sogou定位失败");
+//		result.setError(error + "");
+//		mLocationCouter.increaseLocationCount(AppContext.SOGOU);
+//		updateLog(result, AppContext.SOGOU, false);
+//	}
+//    //sogou
+//	@Override
+//	public void onLocationUpdate(SGLocation location) {
+//		System.out.println("test " + location);
+//		trafficStat();
+//		if (Conditions.isNull(location)) {
+//			return;
+//		}
+//		if (mAppStatus.sogouFirst == -1) {
+//			mAppStatus.sogouFirst = SystemClock.elapsedRealtime();
+//		}
+//
+//		Result result = new Result(AppContext.SOGOU);
+//		result.setTime(TIME2.format(new Date()));
+//
+//		result.setReason("S");
+//		result.setError(0 + "");
+//		
+//
+//		double latitude = location.getLatitude();
+//		double longitude = location.getLongitude();
+//		float accurancy = location.getAccuracy();
+//		int offset = 5;
+//
+//		if(sLocation != null){
+//			sdistance+=TencentLocationUtils.distanceBetween(bLocation.getLatitude(), bLocation.getLongitude(), latitude, longitude);
+//			sLocation= location;
+//		}
+//		if (SOGOU_GCJ02) {
+//			EvilTransform.transform(latitude, longitude, SOGOU_LAT_LNG);
+//			latitude = SOGOU_LAT_LNG[0];
+//			longitude = SOGOU_LAT_LNG[1];
+//		}
+//		result.setData(0 + "");
+//
+//		result.setLat(latitude);
+//		result.setLng(longitude);
+//		result.setRadius(accurancy);
+//		result.setOffSet(offset + "");
+//		result.setDistance(sdistance/10000);
+//		result.setImei(imei);
+//		
+//		updateLog(result,AppContext.SOGOU,true);
+//	}
 	private void trafficStat() {
 		final int uid = Process.myUid();
 		mAppStatus.setTraffic(TrafficStats.getUidRxBytes(uid)

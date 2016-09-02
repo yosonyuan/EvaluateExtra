@@ -77,9 +77,9 @@ public class LocationStatusFrag extends Fragment implements OnClickListener {
 		List<Result> results = mAppContext.getLocations(mKey, 3);
 		for (int i = 0; i < results.size(); i++) {
 			Result result = results.get(i);
-			String provideString = result.getProvider()!=null && result.getProvider().equalsIgnoreCase("gps")?"G":"N";
+			String provider = (result.getProvider() == null || result.getProvider().equalsIgnoreCase("null"))?"gps":result.getProvider();
 			String str = result.getTime() + "    " + result.getLat() + ","
-					+ result.getLng() + "," + result.getRadius()+","+provideString;
+					+ result.getLng() + "," + result.getRadius()+","+provider;
 			tvRecords[i].setText(str);
 		}
 
