@@ -42,7 +42,7 @@ public final class AppContext extends Application {
 	
 	public TencentLocationManager tlm ;
 
-	public static final String TITLE_TENCENT = "腾讯 V4.8.8.8";
+	public static final String TITLE_TENCENT = "腾讯 V4.8.8.9";
 	public static final String TITLE_BAIDU = "百度 V7.0";
 	public static final String TITLE_AMAP = "高德 V2.8.0";
 	public static final String TITLE_SOGOU = "搜狗 V1.0";
