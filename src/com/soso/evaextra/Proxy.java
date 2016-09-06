@@ -52,6 +52,7 @@ import com.tencent.map.geolocation.TencentLocationUtils;
 import com.tencent.map.geolocation.internal.TencentExtraKeys;
 import com.tencent.map.geolocation.internal.TencentLog;
 import com.tencent.map.geolocation.internal.TencentLogImpl;
+import com.tencent.map.geolocation.iodetector.provider.IoWifiProvider;
 
 public class Proxy implements TencentDistanceListener,TencentLocationListener, BDLocationListener,
 		AMapLocationListener {
@@ -737,6 +738,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 			//请求的query，需要存储在日志文件中
 			//DODODO
 			String req = TencentExtraKeys.getRawQuery(location);
+			IoWifiProvider.getInstance().onLocationRawData(req);
 			//String req = "";
 			mUserLog.logWithoutEncrypt(AppContext.ALL_SDKS, req);
 			mSinglePointLog.logWithoutEncrypt(AppContext.ALL_SDKS, req);
@@ -751,6 +753,7 @@ public class Proxy implements TencentDistanceListener,TencentLocationListener, B
 				Log.e(TAG, e.getMessage(), e);
 			}
 		} else {
+			IoWifiProvider.getInstance().onLocationRawData(""); // 置Wifi定位为unknow
 			result.setReason("腾讯定位失败");
 			result.setError(error + "");
 			mLocationCouter.increaseLocationCount(AppContext.TENCENT);
